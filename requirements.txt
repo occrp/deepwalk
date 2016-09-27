@@ -1,9 +1,5 @@
-click
-python-magic
 rarfile
 chardet
-dataset
-
 unidecode
 normality
-git+https://github.com/occrp/cronosparser
+six

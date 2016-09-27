@@ -2,9 +2,9 @@ from setuptools import setup, find_packages
 
 
 setup(
-    name='datasurvey',
+    name='deepwalk',
     version='0.1',
-    description="Crawl a directory of files and generate a summary of what is available.",
+    description="Crawl a directory of files, handle archives transparently.",
     long_description="",
     classifiers=[
         "Development Status :: 3 - Alpha",
@@ -17,7 +17,7 @@ setup(
     keywords='files walk index survey',
     author='OCCRP',
     author_email='tech@occrp.org',
-    url='http://github.com/occrp/datasurvey',
+    url='http://github.com/occrp/deepwalk',
     license='MIT',
     packages=find_packages(exclude=['ez_setup', 'examples', 'test']),
     namespace_packages=[],
@@ -26,27 +26,23 @@ setup(
     zip_safe=False,
     test_suite='nose.collector',
     install_requires=[
-        'click',
         'chardet',
-        'python-magic',
         'rarfile',
-        'dataset'
+        'six',
+        'normality'
     ],
     tests_require=[
         'nose',
         'coverage',
     ],
     entry_points={
-        'console_scripts': [
-            'datasurvey = datasurvey.cli:main'
-        ],
-        'datasurvey.scanners': [
-            'file = datasurvey.scanner:FileScanner',
-            'dir = datasurvey.scanner:DirectoryScanner',
-            'zip = datasurvey.packages:ZipFileScanner',
-            'tar = datasurvey.packages:TarFileScanner',
-            'rar = datasurvey.packages:RarFileScanner',
-            'cro = datasurvey.cro:CronosScanner',
+        'deepwalk.package': [
+            'zip = deepwalk.types:ZipPackage',
+            'rar = deepwalk.types:RarPackage',
+            'tar = deepwalk.types:TarPackage',
+            '7z = deepwalk.types:SevenZipPackage',
+            'gzip = deepwalk.types:GzipPackage',
+            'bz2 = deepwalk.types:BZ2Package',
         ]
     }
 )
