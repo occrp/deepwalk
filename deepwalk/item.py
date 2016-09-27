@@ -34,6 +34,7 @@ class Item(object):
                 real_path = os.path.join(self.real_path, file_name)
                 if not os.path.exists(real_path):
                     log.error("Invalid path: %r", real_path)
+                    continue
                 yield Item(real_path, os.path.join(self.name_path, file_name),
                            temporary=self.temporary)
 

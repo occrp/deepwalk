@@ -45,7 +45,7 @@ class ZipPackage(BundlePackage):
     IGNORE_EXT = ['docx', 'xlsx', 'pptx', 'ods', 'odt']
 
     def unpack(self):
-        log.info("Reading ZIP file: %r", self.item)
+        # log.info("Reading ZIP file: %r", self.item)
         with zipfile.ZipFile(self.item.real_path, 'r') as zf:
             self.unpack_members(zf)
 
