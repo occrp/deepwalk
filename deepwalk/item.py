@@ -39,7 +39,7 @@ class Item(object):
                            temporary=self.temporary)
 
         if self.package is not None:
-            log.debug('Unpacking: %s', self.name_path)
+            log.info('Unpacking: %s (as %s)', self.name_path, type(self.package))
             self.package.safe_unpack()
             yield Item(self.package.temp_path, self.name_path,
                        temporary=True)
