@@ -18,49 +18,56 @@ SEVENZ_BIN = os.environ.get('SEVENZ_BIN', '7z')
 BUNZIP2_BIN = os.environ.get('BUNZIP2_BIN', 'bunzip2')
 
 
-def quote_arg(arg):
-    # arg = arg.replace('"', '\\"')
-    # return '"%s"' % arg
-    return arg
+class BundlePackage(Package):
+
+    def unpack_members(self, pack):
+        # Some archives come with non-Unicode file names, this
+        # attempts to avoid that issue by naming the destination
+        # explicitly.
+        for name in pack.namelist():
+            out_path = os.path.join(self.temp_path, name)
+            if os.path.exists(out_path):
+                continue
+            if not out_path.startswith(self.temp_path):
+                continue
+            if not os.path.exists(os.path.dirname(out_path)):
+                os.makedirs(os.path.dirname(out_path))
+            try:
+                in_fh = pack.open(name)
+                try:
+                    with open(out_path, 'w') as out_fh:
+                        shutil.copyfileobj(in_fh, out_fh)
+                finally:
+                    in_fh.close()
+            except Exception as ex:
+                log.debug("Failed to unpack %s: %s", out_path, ex)
 
 
-class ZipPackage(Package):
+class ZipPackage(BundlePackage):
 
     IGNORE_EXT = ['docx', 'xlsx', 'pptx', 'ods', 'odt']
 
     def unpack(self):
-        args = [UNZIP_BIN, '-n', '-qq', self.item.real_path,
-                '-d', self.temp_path]
-        subprocess.call(args)
+        # log.info("Reading ZIP file: %r", self.item)
+        with zipfile.ZipFile(self.item.real_path, 'r') as zf:
+            self.unpack_members(zf)
 
     def bid_file(self):
         if self.item.extension in self.IGNORE_EXT:
             return
         if zipfile.is_zipfile(self.item.real_path):
-            return 6
+            return 7
 
 
-class RarPackage(Package):
-    free_version = None
-
-    def test_version(self):
-        if self.free_version is None:
-            output = subprocess.check_output(UNRAR_BIN)
-            self.free_version = 'freeware' in output
+class RarPackage(BundlePackage):
 
     def unpack(self):
-        self.test_version()
-        if self.free_version:
-            args = [UNRAR_BIN, 'x', '-y', '-inul', self.item.real_path,
-                    self.temp_path]
-        else:
-            args = [UNRAR_BIN, '-x', self.item.real_path,
-                    self.temp_path]
-        subprocess.call(args)
+        with rarfile.RarFile(self.item.real_path) as rf:
+            self.unpack_members(rf)
 
     def bid_file(self):
         if rarfile.is_rarfile(self.item.real_path):
-            return 7
+            return 10
         return -1
 
 
