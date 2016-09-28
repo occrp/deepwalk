@@ -88,8 +88,8 @@ class SevenZipPackage(ExtensionPackage):
     EXTENSIONS = ['7z', '7zip']
 
     def unpack(self):
-        args = [SEVENZ_BIN, 'x', self.item.real_path, '-y', '-r',
-                '-bb0', '-bd', '-oc:%s' % self.temp_path]
+        args = [SEVENZ_BIN, 'x', '-y', '-r', '-bd',
+                '-o%s' % self.temp_path, self.item.real_path]
         subprocess.call(args)
 
 
